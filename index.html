@@ -886,8 +886,9 @@
             el.className = cls;
             el.textContent = seat.id;
 
-            if (seat.state === "booked" && seat.bookedBy) {
-              el.innerHTML = `${seat.id}<div class="tip">${seat.bookedBy}</div>`;
+            if (seat.state === "booked") {
+              const bookedByLabel = seat.bookedBy || "Booked";
+              el.innerHTML = `${seat.id}<div class="tip">${bookedByLabel}</div>`;
             }
             if (seat.state === "held" && seat.isMine) {
               el.innerHTML = `${seat.id}<div class="tip">Your hold - click to confirm</div>`;
@@ -937,6 +938,27 @@
 
         await loadSeats();
         openConfirmModal(seat.id);
+      }
+
+      async function releaseHoldAndRefresh(seatId, options = {}) {
+        const { silent = false } = options;
+        if (!seatId || !token) {
+          await loadSeats();
+          return;
+        }
+
+        const result = await api(`/movies/${MOVIE_ID}/seats/${seatId}/hold`, {
+          method: "DELETE",
+          headers: authHeaders(),
+        });
+
+        if (!result.ok && result.body?.code !== "hold_not_found") {
+          showToast(result.body?.error || "Unable to cancel hold", "error");
+        } else if (!silent) {
+          showToast("Hold cancelled", "info");
+        }
+
+        await loadSeats();
       }
 
       /* ---------- confirm modal ---------- */
@@ -994,16 +1016,17 @@
         await loadMyBookings();
       });
 
-      $("cancelHoldBtn").addEventListener("click", () => {
+      $("cancelHoldBtn").addEventListener("click", async () => {
+        const seatIdToRelease = holdSeatId;
         closeConfirmModal();
-        showToast("Hold cancelled", "info");
-        loadSeats();
+        await releaseHoldAndRefresh(seatIdToRelease);
       });
 
-      confirmModal.addEventListener("click", (e) => {
+      confirmModal.addEventListener("click", async (e) => {
         if (e.target === confirmModal) {
+          const seatIdToRelease = holdSeatId;
           closeConfirmModal();
-          loadSeats();
+          await releaseHoldAndRefresh(seatIdToRelease, { silent: true });
         }
       });
 

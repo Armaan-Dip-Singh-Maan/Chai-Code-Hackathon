@@ -71,10 +71,11 @@ export const listMovieSeats = async ({ movieId, userId }) => {
   return result.rows.map((row) => {
     const isBooked = row.booking_status === BOOKED_STATUS || row.legacy_isbooked === 1;
     const isHeld = !isBooked && Boolean(row.held_by_user_id);
+    const bookedBy = row.booked_by_name || row.legacy_name || "Booked";
     return {
       id: row.id,
       state: isBooked ? "booked" : isHeld ? "held" : "available",
-      bookedBy: row.booked_by_name || row.legacy_name || null,
+      bookedBy: isBooked ? bookedBy : null,
       isMine: row.booked_by_user_id === userId || row.held_by_user_id === userId,
       holdExpiresAt: row.hold_expires_at,
     };
