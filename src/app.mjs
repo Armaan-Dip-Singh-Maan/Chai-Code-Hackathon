@@ -19,6 +19,7 @@ const authLimiter = rateLimit({
 
 export const createApp = () => {
   const app = express();
+  app.set("trust proxy", 1);
   app.use(cors());
   app.use(express.json());
   app.use(morgan("dev"));
@@ -32,8 +33,12 @@ export const createApp = () => {
         db: "connected",
         timestamp: new Date().toISOString(),
       });
-    } catch (_err) {
-      return res.status(503).json({ status: "error", db: "disconnected" });
+    } catch (err) {
+      return res.status(503).json({
+        status: "error",
+        db: "disconnected",
+        reason: err.message,
+      });
     }
   });
 
@@ -46,3 +51,6 @@ export const createApp = () => {
 
   return app;
 };
+
+const app = createApp();
+export default app;

@@ -146,13 +146,18 @@ cp .env.example .env
 Edit `.env` with your PostgreSQL credentials:
 
 ```env
+DATABASE_URL=
 DB_HOST=localhost
 DB_PORT=5432
 DB_USER=your_pg_user
 DB_PASSWORD=your_pg_password
 DB_NAME=sql_class_2_db
 JWT_SECRET=a_strong_random_secret
+JWT_EXPIRES_IN=2h
+DB_SSL=false
 ```
+
+`DATABASE_URL` is optional for local development. If provided, it takes priority over `DB_HOST/DB_PORT/DB_USER/DB_PASSWORD/DB_NAME`.
 
 ### 3. Create database
 
@@ -174,6 +179,59 @@ npm run dev     # watch mode (auto-restart)
 ```
 
 Server runs at `http://localhost:8080`.
+
+## Deploy on Vercel + Neon
+
+### 1. Push your repository
+
+```bash
+git push origin main
+```
+
+### 2. Create Neon database
+
+In Neon dashboard:
+
+- Create a project and database
+- Open **Connection Details**
+- Select **Pooled connection**
+- Copy the full pooled URL:
+  `postgresql://<user>:<password>@<host>/<db>?sslmode=require...`
+
+### 3. Configure Vercel env vars
+
+Set these variables in Vercel project settings (Production):
+
+- `DATABASE_URL` (Neon pooled URL)
+- `JWT_SECRET` (strong random string)
+- `JWT_EXPIRES_IN` (`2h`)
+- `HOLD_DURATION_SECONDS` (`120`)
+- `HOLD_CLEANUP_INTERVAL_MS` (`30000`)
+
+Optional fallback vars (not required when `DATABASE_URL` is set):
+
+- `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `DB_SSL`
+
+### 4. Deploy
+
+```bash
+npx vercel deploy --prod --yes
+```
+
+### 5. Verify deployment
+
+```bash
+curl https://<your-project>.vercel.app/health
+```
+
+Expected response:
+
+```json
+{
+  "status": "ok",
+  "db": "connected"
+}
+```
 
 ## API Reference
 
