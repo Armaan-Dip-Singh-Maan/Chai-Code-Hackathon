@@ -961,6 +961,23 @@
         await loadSeats();
       }
 
+      async function cancelBookingAndRefresh(seatId) {
+        if (!seatId || !token) return;
+        const result = await api(`/movies/${MOVIE_ID}/seats/${seatId}/booking`, {
+          method: "DELETE",
+          headers: authHeaders(),
+        });
+
+        if (!result.ok) {
+          showToast(result.body?.error || "Unable to cancel booking", "error");
+        } else {
+          showToast(`Seat ${seatId} booking cancelled`, "info");
+        }
+
+        await loadSeats();
+        await loadMyBookings();
+      }
+
       /* ---------- confirm modal ---------- */
       function openConfirmModal(seatId) {
         holdSeatId = seatId;
@@ -1053,10 +1070,30 @@
                   <p class="text-[11px] text-zinc-500">${new Date(b.createdAt).toLocaleString()}</p>
                 </div>
               </div>
-              <span class="px-2 py-1 rounded-md text-[10px] font-semibold uppercase tracking-wider ${b.status === "booked" ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : "bg-zinc-800 text-zinc-400"}">${b.status}</span>
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-1 rounded-md text-[10px] font-semibold uppercase tracking-wider ${b.status === "booked" ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : "bg-zinc-800 text-zinc-400"}">${b.status}</span>
+                ${
+                  b.status === "booked"
+                    ? `<button data-cancel-booking-seat="${b.seatId}" class="px-2 py-1 rounded-md text-[10px] font-semibold border border-rose-500/30 text-rose-300 bg-rose-500/10 hover:bg-rose-500/20 transition">Cancel</button>`
+                    : ""
+                }
+              </div>
             </div>`
           )
           .join("");
+
+        bookingsList
+          .querySelectorAll("[data-cancel-booking-seat]")
+          .forEach((button) => {
+            button.addEventListener("click", async () => {
+              const seatId = Number.parseInt(
+                button.getAttribute("data-cancel-booking-seat"),
+                10
+              );
+              if (Number.isNaN(seatId)) return;
+              await cancelBookingAndRefresh(seatId);
+            });
+          });
       }
 
       /* ---------- boot ---------- */

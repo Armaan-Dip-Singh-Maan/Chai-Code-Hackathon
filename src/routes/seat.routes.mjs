@@ -2,6 +2,7 @@ import { Router } from "express";
 import { requireAuth } from "../middleware/auth.middleware.mjs";
 import { asyncHandler } from "../middleware/error.middleware.mjs";
 import {
+  cancelSeatBooking,
   confirmSeatBooking,
   holdSeat,
   listMovieSeats,
@@ -56,6 +57,16 @@ seatRouter.post(
       userId: req.user.userId,
     });
     return res.status(200).json({ booking });
+  })
+);
+
+seatRouter.delete(
+  "/movies/:movieId/seats/:seatId/booking",
+  requireAuth,
+  asyncHandler(async (req, res) => {
+    const { movieId, seatId } = seatParamSchema.parse(req.params);
+    await cancelSeatBooking({ movieId, seatId, userId: req.user.userId });
+    return res.status(200).json({ message: "Booking canceled" });
   })
 );
 

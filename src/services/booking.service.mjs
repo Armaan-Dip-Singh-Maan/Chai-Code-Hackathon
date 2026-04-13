@@ -215,6 +215,51 @@ export const listUserBookings = async ({ userId }) => {
   return result.rows;
 };
 
+export const cancelSeatBooking = async ({ movieId, seatId, userId }) => {
+  const conn = await pool.connect();
+  try {
+    await conn.query("BEGIN");
+    await conn.query("SELECT id FROM seats WHERE id = $1 FOR UPDATE", [seatId]);
+
+    const bookingResult = await conn.query(
+      `
+        SELECT id
+        FROM bookings
+        WHERE seat_id = $1
+          AND movie_id = $2
+          AND user_id = $3
+          AND status = $4
+        FOR UPDATE
+      `,
+      [seatId, movieId, userId, BOOKED_STATUS]
+    );
+
+    if (bookingResult.rowCount === 0) {
+      throw new AppError(
+        404,
+        "No active booking found for this user and seat",
+        "booking_not_found"
+      );
+    }
+
+    await conn.query(
+      "UPDATE bookings SET status = $2, updated_at = NOW() WHERE id = $1",
+      [bookingResult.rows[0].id, CANCELED_STATUS]
+    );
+
+    await conn.query("UPDATE seats SET isbooked = 0, name = NULL WHERE id = $1", [
+      seatId,
+    ]);
+
+    await conn.query("COMMIT");
+  } catch (error) {
+    await conn.query("ROLLBACK");
+    throw error;
+  } finally {
+    conn.release();
+  }
+};
+
 export const releaseSeatHold = async ({ movieId, seatId, userId }) => {
   const result = await pool.query(
     "UPDATE seat_holds SET status = $4 WHERE seat_id = $1 AND movie_id = $2 AND user_id = $3 AND status = $5",
