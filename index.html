@@ -3,139 +3,1049 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Stellar Seat Booking</title>
+    <title>BookMyTicket - ChaiCode Cinema</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
     <style>
-      @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap");
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
       body {
-        font-family: "Outfit", sans-serif;
-        background-color: #0f172a;
-        color: #f8fafc;
+        font-family: "Inter", sans-serif;
+        background: #0a0a0f;
+        color: #e4e4e7;
+        overflow-x: hidden;
+      }
+
+      /* ---------- ambient glow ---------- */
+      .ambient-glow {
+        position: fixed;
+        width: 600px;
+        height: 600px;
+        border-radius: 50%;
+        filter: blur(160px);
+        opacity: 0.15;
+        pointer-events: none;
+        z-index: 0;
+      }
+      .glow-1 {
+        top: -200px;
+        left: -100px;
+        background: #e11d48;
+      }
+      .glow-2 {
+        bottom: -250px;
+        right: -150px;
+        background: #6366f1;
+      }
+
+      /* ---------- glass card ---------- */
+      .glass {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+      }
+
+      /* ---------- input focus ring ---------- */
+      .input-field {
+        transition: box-shadow 0.2s, border-color 0.2s;
+      }
+      .input-field:focus {
+        outline: none;
+        border-color: #e11d48;
+        box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.15);
+      }
+
+      /* ---------- seat grid ---------- */
+      .seat {
+        width: 52px;
+        height: 52px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        user-select: none;
+      }
+      .seat.available {
+        background: rgba(16, 185, 129, 0.12);
+        border: 1.5px solid rgba(16, 185, 129, 0.4);
+        color: #34d399;
+      }
+      .seat.available:hover {
+        background: rgba(16, 185, 129, 0.25);
+        border-color: #34d399;
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2);
+      }
+      .seat.booked {
+        background: rgba(225, 29, 72, 0.08);
+        border: 1.5px solid rgba(225, 29, 72, 0.2);
+        color: rgba(225, 29, 72, 0.4);
+        cursor: not-allowed;
+      }
+      .seat.held {
+        background: rgba(245, 158, 11, 0.12);
+        border: 1.5px solid rgba(245, 158, 11, 0.4);
+        color: #fbbf24;
+        cursor: not-allowed;
+      }
+      .seat.held-mine {
+        background: rgba(99, 102, 241, 0.15);
+        border: 1.5px solid rgba(99, 102, 241, 0.5);
+        color: #a5b4fc;
+        cursor: pointer;
+        animation: pulse-mine 2s infinite;
+      }
+      @keyframes pulse-mine {
+        0%,
+        100% {
+          box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.3);
+        }
+        50% {
+          box-shadow: 0 0 0 6px rgba(99, 102, 241, 0);
+        }
+      }
+
+      /* ---------- tooltip ---------- */
+      .seat .tip {
+        position: absolute;
+        bottom: calc(100% + 10px);
+        left: 50%;
+        transform: translateX(-50%) scale(0.92);
+        background: #18181b;
+        border: 1px solid #27272a;
+        color: #e4e4e7;
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 11px;
+        font-weight: 400;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.2s;
+        z-index: 50;
+      }
+      .seat .tip::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -5px;
+        border: 5px solid transparent;
+        border-top-color: #27272a;
+      }
+      .seat:hover .tip {
+        opacity: 1;
+        transform: translateX(-50%) scale(1);
+      }
+
+      /* ---------- buttons ---------- */
+      .btn-primary {
+        background: linear-gradient(135deg, #e11d48, #be123c);
+        color: #fff;
+        transition: all 0.25s;
+      }
+      .btn-primary:hover {
+        box-shadow: 0 6px 20px rgba(225, 29, 72, 0.35);
+        transform: translateY(-1px);
+      }
+      .btn-primary:active {
+        transform: scale(0.97);
+      }
+      .btn-ghost {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #a1a1aa;
+        transition: all 0.2s;
+      }
+      .btn-ghost:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #e4e4e7;
+      }
+      .btn-confirm {
+        background: linear-gradient(135deg, #6366f1, #4f46e5);
+        color: #fff;
+        transition: all 0.25s;
+      }
+      .btn-confirm:hover {
+        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35);
+        transform: translateY(-1px);
+      }
+
+      /* ---------- screen curve ---------- */
+      .screen-curve {
+        width: 80%;
+        max-width: 500px;
+        height: 14px;
+        margin: 0 auto 40px;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.08),
+          transparent
+        );
+        border-radius: 0 0 50% 50%;
+        position: relative;
+      }
+      .screen-curve::before {
+        content: "SCREEN";
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 10px;
+        letter-spacing: 4px;
+        color: #52525b;
+        font-weight: 500;
+      }
+
+      /* ---------- modal overlay ---------- */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(8px);
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s;
+      }
+      .modal-overlay.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .modal-card {
+        transform: translateY(20px) scale(0.96);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .modal-overlay.active .modal-card {
+        transform: translateY(0) scale(1);
+      }
+
+      /* ---------- tab ---------- */
+      .tab-btn {
+        transition: all 0.2s;
+      }
+      .tab-btn.active {
+        color: #e11d48;
+        border-bottom: 2px solid #e11d48;
+      }
+
+      /* ---------- skeleton shimmer ---------- */
+      @keyframes shimmer {
+        0% {
+          background-position: -200% 0;
+        }
+        100% {
+          background-position: 200% 0;
+        }
+      }
+      .skeleton {
+        background: linear-gradient(
+          90deg,
+          rgba(255, 255, 255, 0.04) 25%,
+          rgba(255, 255, 255, 0.08) 50%,
+          rgba(255, 255, 255, 0.04) 75%
+        );
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite;
+        border-radius: 10px;
+      }
+
+      /* ---------- fade-in ---------- */
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .fade-up {
+        animation: fadeUp 0.5s ease forwards;
+      }
+
+      /* ---------- toast ---------- */
+      .toast-container {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        z-index: 200;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .toast {
+        padding: 12px 20px;
+        border-radius: 12px;
+        font-size: 13px;
+        font-weight: 500;
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
+        max-width: 340px;
+      }
+      .toast.success {
+        background: rgba(16, 185, 129, 0.15);
+        color: #34d399;
+      }
+      .toast.error {
+        background: rgba(225, 29, 72, 0.15);
+        color: #fb7185;
+      }
+      .toast.info {
+        background: rgba(99, 102, 241, 0.15);
+        color: #a5b4fc;
+      }
+      @keyframes slideIn {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+      @keyframes fadeOut {
+        to {
+          opacity: 0;
+          transform: translateX(40px);
+        }
+      }
+
+      /* ---------- countdown ring ---------- */
+      .countdown-ring {
+        width: 28px;
+        height: 28px;
+      }
+      .countdown-ring circle {
+        fill: none;
+        stroke-width: 3;
+      }
+      .countdown-ring .bg {
+        stroke: rgba(255, 255, 255, 0.06);
+      }
+      .countdown-ring .progress {
+        stroke: #6366f1;
+        stroke-linecap: round;
+        transition: stroke-dashoffset 1s linear;
       }
     </style>
   </head>
-  <body
-    class="min-h-screen flex items-center justify-center p-6 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900"
-  >
-    <div
-      class="max-w-7xl w-full bg-slate-800/80 backdrop-blur-xl rounded-3xl shadow-2xl p-10 border border-slate-700/50"
-    >
-      <div class="text-center mb-10">
-        <h1
-          class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400 mb-4 tracking-tight"
-        >
-          ChaiCode Cinema - Now Showing<br />
-          <br />
-          <span class="text-red-400">
-            <span class="font-bold">Dhurandhar The Revenge</span>
-          </span>
-        </h1>
-        <p class="text-slate-400 text-lg">Jassi ko ghar ki yaad kyu nhi aai?</p>
-      </div>
 
-      <div class="flex justify-center mb-10">
-        <div
-          class="bg-slate-900/50 rounded-full px-6 py-3 border border-slate-700 flex gap-8 items-center"
-        >
-          <div class="flex items-center gap-3">
-            <div
-              class="w-4 h-4 rounded-full bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.6)]"
-            ></div>
-            <span class="text-slate-300 font-medium tracking-wide"
-              >Available</span
-            >
+  <body>
+    <!-- ambient glow -->
+    <div class="ambient-glow glow-1"></div>
+    <div class="ambient-glow glow-2"></div>
+
+    <!-- toast container -->
+    <div class="toast-container" id="toasts"></div>
+
+    <!-- ===== AUTH MODAL ===== -->
+    <div class="modal-overlay" id="authModal">
+      <div
+        class="modal-card glass rounded-2xl p-8 w-full max-w-md mx-4"
+        id="authCard"
+      >
+        <div class="flex items-center justify-center gap-3 mb-6">
+          <div
+            class="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500 to-rose-700 flex items-center justify-center text-white font-bold text-sm"
+          >
+            BT
           </div>
-          <div class="w-px h-6 bg-slate-700"></div>
-          <div class="flex items-center gap-3">
-            <div
-              class="w-4 h-4 rounded-full bg-rose-500/20 border border-rose-500/50"
-            ></div>
-            <span class="text-slate-400 font-medium tracking-wide">Booked</span>
+          <span class="text-xl font-bold text-white tracking-tight"
+            >BookMyTicket</span
+          >
+        </div>
+
+        <!-- tabs -->
+        <div
+          class="flex gap-6 justify-center mb-6 border-b border-zinc-800 pb-2"
+        >
+          <button
+            class="tab-btn active pb-2 text-sm font-medium"
+            data-tab="login"
+          >
+            Sign In
+          </button>
+          <button class="tab-btn pb-2 text-sm font-medium" data-tab="register">
+            Create Account
+          </button>
+        </div>
+
+        <!-- register fields -->
+        <div id="registerFields" class="hidden mb-4">
+          <label class="text-xs text-zinc-500 mb-1 block">Full Name</label>
+          <input
+            id="nameInput"
+            class="input-field w-full px-4 py-3 rounded-xl bg-zinc-900/80 border border-zinc-800 text-white text-sm mb-3"
+            placeholder="Armaan Singh"
+          />
+        </div>
+
+        <!-- shared fields -->
+        <div class="mb-3">
+          <label class="text-xs text-zinc-500 mb-1 block">Email</label>
+          <input
+            id="emailInput"
+            type="email"
+            class="input-field w-full px-4 py-3 rounded-xl bg-zinc-900/80 border border-zinc-800 text-white text-sm"
+            placeholder="you@example.com"
+          />
+        </div>
+        <div class="mb-5">
+          <label class="text-xs text-zinc-500 mb-1 block">Password</label>
+          <input
+            id="passwordInput"
+            type="password"
+            class="input-field w-full px-4 py-3 rounded-xl bg-zinc-900/80 border border-zinc-800 text-white text-sm"
+            placeholder="Min 6, upper, lower, number, special"
+          />
+          <p id="passwordHint" class="text-[11px] text-zinc-500 mt-2 hidden">
+            Use at least 6 characters with uppercase, lowercase, number, and
+            special character.
+          </p>
+        </div>
+
+        <button
+          id="authSubmitBtn"
+          class="btn-primary w-full py-3 rounded-xl font-semibold text-sm"
+        >
+          Sign In
+        </button>
+        <p id="authError" class="text-xs text-rose-400 mt-3 text-center"></p>
+      </div>
+    </div>
+
+    <!-- ===== CONFIRM MODAL ===== -->
+    <div class="modal-overlay" id="confirmModal">
+      <div class="modal-card glass rounded-2xl p-8 w-full max-w-sm mx-4 text-center">
+        <div class="mb-4">
+          <div
+            class="w-16 h-16 mx-auto rounded-full bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center mb-4"
+          >
+            <span id="confirmSeatLabel" class="text-2xl font-bold text-indigo-400"></span>
+          </div>
+          <h3 class="text-lg font-semibold text-white mb-1">Confirm Booking</h3>
+          <p class="text-sm text-zinc-400">
+            Seat <span id="confirmSeatId" class="text-white font-medium"></span>
+            is held for you.
+          </p>
+          <div class="flex items-center justify-center gap-2 mt-3 text-xs text-zinc-500">
+            <svg class="countdown-ring" viewBox="0 0 36 36">
+              <circle class="bg" cx="18" cy="18" r="14" />
+              <circle
+                class="progress"
+                id="countdownCircle"
+                cx="18"
+                cy="18"
+                r="14"
+                stroke-dasharray="87.96"
+                stroke-dashoffset="0"
+                transform="rotate(-90 18 18)"
+              />
+            </svg>
+            <span id="countdownText">2:00</span>
           </div>
         </div>
-      </div>
-
-      <div class="flex justify-center">
-        <div
-          class="bg-slate-900/40 p-8 rounded-2xl border border-slate-700/50 shadow-inner"
-        >
-          <table
-            id="tbl"
-            class="border-separate border-spacing-4 mx-auto"
-          ></table>
+        <div class="flex gap-3">
+          <button
+            id="cancelHoldBtn"
+            class="btn-ghost flex-1 py-3 rounded-xl text-sm font-medium"
+          >
+            Cancel
+          </button>
+          <button
+            id="confirmBookBtn"
+            class="btn-confirm flex-1 py-3 rounded-xl text-sm font-semibold"
+          >
+            Confirm Booking
+          </button>
         </div>
       </div>
     </div>
 
+    <!-- ===== MAIN APP ===== -->
+    <div class="relative z-10 min-h-screen flex flex-col">
+      <!-- navbar -->
+      <nav
+        class="flex items-center justify-between px-6 py-4 border-b border-zinc-800/60"
+      >
+        <div class="flex items-center gap-3">
+          <div
+            class="w-9 h-9 rounded-lg bg-gradient-to-br from-rose-500 to-rose-700 flex items-center justify-center text-white font-bold text-xs"
+          >
+            BT
+          </div>
+          <span class="text-lg font-bold text-white tracking-tight"
+            >BookMyTicket</span
+          >
+        </div>
+        <div id="navRight" class="flex items-center gap-3">
+          <button
+            id="navLoginBtn"
+            class="btn-primary px-5 py-2 rounded-lg text-xs font-semibold"
+          >
+            Sign In
+          </button>
+        </div>
+      </nav>
+
+      <!-- hero / movie banner -->
+      <div
+        class="relative overflow-hidden py-10 px-6"
+        style="
+          background: linear-gradient(
+            180deg,
+            rgba(225, 29, 72, 0.08) 0%,
+            transparent 100%
+          );
+        "
+      >
+        <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-8">
+          <div
+            class="w-48 h-72 rounded-2xl bg-gradient-to-br from-rose-900/50 to-zinc-900 border border-zinc-800 flex items-center justify-center shadow-2xl flex-shrink-0"
+          >
+            <div class="text-center p-4">
+              <div class="text-4xl mb-2">🎬</div>
+              <p class="text-sm font-semibold text-white leading-tight">
+                Dhurandhar<br />The Revenge
+              </p>
+              <p class="text-[10px] text-zinc-500 mt-2">2026 - Action/Drama</p>
+            </div>
+          </div>
+          <div class="text-center md:text-left">
+            <div
+              class="inline-block px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-400 text-[10px] font-semibold uppercase tracking-widest mb-3"
+            >
+              Now Showing
+            </div>
+            <h1
+              class="text-3xl md:text-4xl font-extrabold text-white mb-2 tracking-tight"
+            >
+              Dhurandhar The Revenge
+            </h1>
+            <p class="text-zinc-400 text-sm mb-4 max-w-md">
+              Jassi ko ghar ki yaad kyu nhi aai? Experience the blockbuster on
+              the big screen at ChaiCode Cinema.
+            </p>
+            <div class="flex flex-wrap gap-3 justify-center md:justify-start">
+              <span
+                class="px-3 py-1 rounded-lg bg-zinc-800/60 border border-zinc-700/50 text-xs text-zinc-300"
+                >Hindi</span
+              >
+              <span
+                class="px-3 py-1 rounded-lg bg-zinc-800/60 border border-zinc-700/50 text-xs text-zinc-300"
+                >2h 30min</span
+              >
+              <span
+                class="px-3 py-1 rounded-lg bg-zinc-800/60 border border-zinc-700/50 text-xs text-zinc-300"
+                >UA</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- main content -->
+      <div class="flex-1 px-6 py-8">
+        <div class="max-w-5xl mx-auto">
+          <!-- section header -->
+          <div
+            class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4"
+          >
+            <div>
+              <h2 class="text-xl font-bold text-white mb-1">Select Seats</h2>
+              <p class="text-xs text-zinc-500">
+                Choose your seats and book instantly
+              </p>
+            </div>
+            <!-- legend -->
+            <div class="flex gap-4 flex-wrap">
+              <div class="flex items-center gap-2">
+                <div
+                  class="w-5 h-5 rounded-md bg-emerald-500/12 border border-emerald-500/40"
+                  style="background: rgba(16, 185, 129, 0.12)"
+                ></div>
+                <span class="text-[11px] text-zinc-400">Available</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <div
+                  class="w-5 h-5 rounded-md"
+                  style="
+                    background: rgba(99, 102, 241, 0.15);
+                    border: 1.5px solid rgba(99, 102, 241, 0.5);
+                  "
+                ></div>
+                <span class="text-[11px] text-zinc-400">Your Hold</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <div
+                  class="w-5 h-5 rounded-md"
+                  style="
+                    background: rgba(245, 158, 11, 0.12);
+                    border: 1.5px solid rgba(245, 158, 11, 0.4);
+                  "
+                ></div>
+                <span class="text-[11px] text-zinc-400">Held</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <div
+                  class="w-5 h-5 rounded-md"
+                  style="
+                    background: rgba(225, 29, 72, 0.08);
+                    border: 1.5px solid rgba(225, 29, 72, 0.2);
+                  "
+                ></div>
+                <span class="text-[11px] text-zinc-400">Booked</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- screen -->
+          <div class="screen-curve"></div>
+
+          <!-- seat grid -->
+          <div
+            id="seatGrid"
+            class="flex flex-col items-center gap-3 mb-10"
+          ></div>
+
+          <!-- my bookings -->
+          <div
+            id="bookingsSection"
+            class="glass rounded-2xl p-6 mt-6 hidden fade-up"
+          >
+            <h3 class="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+              <svg
+                class="w-4 h-4 text-rose-400"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  d="M2 6a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 100 4v2a2 2 0 01-2 2H4a2 2 0 01-2-2v-2a2 2 0 100-4V6z"
+                />
+              </svg>
+              My Bookings
+            </h3>
+            <div id="bookingsList" class="space-y-2"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- footer -->
+      <footer class="border-t border-zinc-800/60 py-6 px-6 text-center">
+        <p class="text-[11px] text-zinc-600">
+          ChaiCode Cinema &copy; 2026 &middot; Built for Chai Code Hackathon
+        </p>
+      </footer>
+    </div>
+
     <script>
-      async function run() {
-        const tbl = document.getElementById("tbl");
-        const res = await fetch("/seats");
-        const resarray = await res.json();
-        const j = resarray.sort((a, b) => a.id - b.id);
-        let tr;
-        for (let i = 0; i < j.length; i++) {
-          if (i % 8 === 0) tr = document.createElement("tr");
+      const MOVIE_ID = "dhurandhar-the-revenge";
+      const HOLD_DURATION = 120;
+      let token = sessionStorage.getItem("token") || "";
+      let currentUser = null;
+      let holdSeatId = null;
+      let countdownInterval = null;
 
-          const td = document.createElement("td");
+      /* ---------- DOM refs ---------- */
+      const $ = (id) => document.getElementById(id);
+      const authModal = $("authModal");
+      const confirmModal = $("confirmModal");
+      const seatGrid = $("seatGrid");
+      const bookingsSection = $("bookingsSection");
+      const bookingsList = $("bookingsList");
+      const navRight = $("navRight");
 
-          // Base aesthetic classes - added 'relative group' for tooltip positioning
-          const baseClasses =
-            "w-32 h-32 rounded-2xl text-center align-middle text-2xl font-bold transition-all duration-300 select-none relative group";
+      /* ---------- helpers ---------- */
+      function showToast(message, type = "info") {
+        const container = $("toasts");
+        const toast = document.createElement("div");
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 3200);
+      }
 
-          if (j[i].isbooked) {
-            td.className = `${baseClasses} bg-rose-500/10 text-rose-500/60 border border-rose-500/20 cursor-not-allowed`;
-            td.innerHTML = `
-                    <span class="relative z-10">${j[i].id}</span>
-                    <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 px-4 py-2 bg-slate-900 border border-slate-700 text-sm text-slate-300 rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap shadow-2xl z-50 pointer-events-none font-normal shadow-[0_10px_25px_rgba(0,0,0,0.5)]">
-                        Booked by: <span class="font-bold text-white ml-1">${j[i].name}</span>
-                        <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-[1px] border-[6px] border-transparent border-t-slate-700"></div>
-                        <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-[2px] border-[5px] border-transparent border-t-slate-900"></div>
-                    </div>
-                `;
-          } else {
-            td.className = `${baseClasses} bg-emerald-500 text-white border-2 border-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.3)] cursor-pointer hover:bg-emerald-400 hover:-translate-y-1.5 hover:shadow-[0_10px_25px_rgba(16,185,129,0.5)] active:scale-95 active:shadow-[0_0_10px_rgba(16,185,129,0.3)]`;
-            td.innerHTML = `<span class="relative z-10">${j[i].id}</span>`;
+      function authHeaders() {
+        return token ? { Authorization: `Bearer ${token}` } : {};
+      }
+
+      async function api(url, opts = {}) {
+        const resp = await fetch(url, {
+          ...opts,
+          headers: {
+            "Content-Type": "application/json",
+            ...(opts.headers || {}),
+          },
+        });
+        const body = await resp.json().catch(() => ({}));
+        return { ok: resp.ok, status: resp.status, body };
+      }
+
+      /* ---------- auth modal ---------- */
+      let authMode = "login";
+
+      function isValidEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      }
+
+      function validateStrongPassword(password) {
+        return (
+          password.length >= 6 &&
+          /[A-Z]/.test(password) &&
+          /[a-z]/.test(password) &&
+          /[0-9]/.test(password) &&
+          /[^A-Za-z0-9]/.test(password)
+        );
+      }
+
+      function openAuthModal() {
+        authModal.classList.add("active");
+      }
+      function closeAuthModal() {
+        authModal.classList.remove("active");
+        $("authError").textContent = "";
+      }
+
+      document.querySelectorAll(".tab-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document
+            .querySelectorAll(".tab-btn")
+            .forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          authMode = btn.dataset.tab;
+          $("registerFields").classList.toggle("hidden", authMode !== "register");
+          $("authSubmitBtn").textContent =
+            authMode === "register" ? "Create Account" : "Sign In";
+          $("passwordHint").classList.toggle("hidden", authMode !== "register");
+        });
+      });
+
+      $("authSubmitBtn").addEventListener("click", async () => {
+        const name = $("nameInput").value.trim();
+        const email = $("emailInput").value.trim();
+        const password = $("passwordInput").value;
+
+        if (authMode === "register" && !name) {
+          $("authError").textContent = "Name is required";
+          return;
+        }
+        if (!email || !password) {
+          $("authError").textContent = "Email and password are required";
+          return;
+        }
+        if (!isValidEmail(email)) {
+          $("authError").textContent =
+            "Please enter a valid email with '@' and domain";
+          return;
+        }
+        if (authMode === "register" && !validateStrongPassword(password)) {
+          $("authError").textContent =
+            "Password must be min 6 chars and include uppercase, lowercase, number, and special character";
+          return;
+        }
+
+        const url = authMode === "register" ? "/auth/register" : "/auth/login";
+        const payload =
+          authMode === "register"
+            ? { name, email, password }
+            : { email, password };
+        const result = await api(url, {
+          method: "POST",
+          body: JSON.stringify(payload),
+        });
+
+        if (!result.ok) {
+          $("authError").textContent = result.body.error || "Auth failed";
+          return;
+        }
+
+        token = result.body.token;
+        sessionStorage.setItem("token", token);
+        currentUser = result.body.user;
+        showToast(`Welcome, ${currentUser.name}!`, "success");
+        closeAuthModal();
+        renderNav();
+        await loadSeats();
+        await loadMyBookings();
+      });
+
+      authModal.addEventListener("click", (e) => {
+        if (e.target === authModal) closeAuthModal();
+      });
+
+      $("navLoginBtn")?.addEventListener("click", openAuthModal);
+
+      /* ---------- nav render ---------- */
+      function renderNav() {
+        if (!currentUser) {
+          navRight.innerHTML = `<button id="navLoginBtn" class="btn-primary px-5 py-2 rounded-lg text-xs font-semibold">Sign In</button>`;
+          $("navLoginBtn").addEventListener("click", openAuthModal);
+          return;
+        }
+        navRight.innerHTML = `
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-red-500 to-red-500 flex items-center justify-center text-white text-xs font-bold">${currentUser.name.charAt(0).toUpperCase()}</div>
+            <span class="text-sm text-zinc-300 hidden sm:block">${currentUser.name}</span>
+            <button id="logoutBtn" class="btn-ghost px-3 py-2 rounded-lg text-xs font-medium">Logout</button>
+          </div>`;
+        $("logoutBtn").addEventListener("click", () => {
+          token = "";
+          currentUser = null;
+          sessionStorage.removeItem("token");
+          showToast("Logged out", "info");
+          renderNav();
+          loadSeats();
+          bookingsSection.classList.add("hidden");
+        });
+      }
+
+      /* ---------- load current user ---------- */
+      async function loadCurrentUser() {
+        if (!token) {
+          currentUser = null;
+          return;
+        }
+        const result = await api("/auth/me", { headers: authHeaders() });
+        if (!result.ok) {
+          token = "";
+          sessionStorage.removeItem("token");
+          currentUser = null;
+          return;
+        }
+        currentUser = result.body.user;
+      }
+
+      /* ---------- seats ---------- */
+      const ROW_LABELS = "ABCDEFGHIJKLMNOP";
+
+      async function loadSeats() {
+        seatGrid.innerHTML = "";
+        let seats = [];
+
+        if (token) {
+          const result = await api(`/movies/${MOVIE_ID}/seats`, {
+            headers: authHeaders(),
+          });
+          if (result.ok) seats = result.body.seats;
+        }
+
+        if (!seats.length) {
+          const fallback = await fetch("/seats");
+          const raw = await fallback.json();
+          seats = raw.map((s) => ({
+            id: s.id,
+            state: s.isbooked ? "booked" : "available",
+            bookedBy: s.name,
+            isMine: false,
+          }));
+        }
+
+        seats.sort((a, b) => a.id - b.id);
+        const perRow = 8;
+        for (let r = 0; r < Math.ceil(seats.length / perRow); r++) {
+          const row = document.createElement("div");
+          row.className = "flex items-center gap-2";
+
+          const label = document.createElement("div");
+          label.className =
+            "w-6 text-right text-[11px] text-zinc-600 font-medium";
+          label.textContent = ROW_LABELS[r] || "";
+          row.appendChild(label);
+
+          for (let c = 0; c < perRow; c++) {
+            const i = r * perRow + c;
+            if (i >= seats.length) break;
+            const seat = seats[i];
+            const el = document.createElement("div");
+
+            let cls = "seat available";
+            if (seat.state === "booked") cls = "seat booked";
+            else if (seat.state === "held" && seat.isMine) cls = "seat held-mine";
+            else if (seat.state === "held") cls = "seat held";
+            el.className = cls;
+            el.textContent = seat.id;
+
+            if (seat.state === "booked" && seat.bookedBy) {
+              el.innerHTML = `${seat.id}<div class="tip">${seat.bookedBy}</div>`;
+            }
+            if (seat.state === "held" && seat.isMine) {
+              el.innerHTML = `${seat.id}<div class="tip">Your hold - click to confirm</div>`;
+            }
+
+            el.addEventListener("click", () => onSeatClick(seat));
+            row.appendChild(el);
           }
 
-          td.addEventListener("click", async function (e) {
-            const currentTd = e.currentTarget;
-            if (currentTd.classList.contains("cursor-not-allowed")) {
-              return; // Seat is already taken
-            }
+          const labelR = document.createElement("div");
+          labelR.className =
+            "w-6 text-left text-[11px] text-zinc-600 font-medium";
+          labelR.textContent = ROW_LABELS[r] || "";
+          row.appendChild(labelR);
 
-            try {
-              const id = j[i].id; // Safe from loop closure
-              const name = prompt("Enter your name");
-              if (!name) return;
-
-              const res = await fetch(`/${id}/${name}`, { method: "PUT" });
-              const data = await res.json();
-
-              if (data.error) {
-                alert("FAILED! Couldn't book! already booked.");
-              } else {
-                alert("Booked successfully!");
-                // Visually transition to booked state upon success
-                currentTd.className = `${baseClasses} bg-rose-500/10 text-rose-500/60 border border-rose-500/20 cursor-not-allowed`;
-                currentTd.innerHTML = `
-                            <span class="relative z-10">${id}</span>
-                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 px-4 py-2 bg-slate-900 border border-slate-700 text-sm text-slate-300 rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap shadow-2xl z-50 pointer-events-none font-normal shadow-[0_10px_25px_rgba(0,0,0,0.5)]">
-                                Booked by: <span class="font-bold text-white ml-1">${name}</span>
-                                <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-[1px] border-[6px] border-transparent border-t-slate-700"></div>
-                                <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-[2px] border-[5px] border-transparent border-t-slate-900"></div>
-                            </div>
-                        `;
-              }
-            } catch (ex) {
-              alert("error booking " + ex);
-            }
-          });
-          tr.appendChild(td);
-          tbl.appendChild(tr);
+          seatGrid.appendChild(row);
         }
       }
-      run();
+
+      /* ---------- seat click ---------- */
+      async function onSeatClick(seat) {
+        if (seat.state === "booked") return;
+        if (seat.state === "held" && !seat.isMine) return;
+
+        if (!token) {
+          showToast("Please sign in to book seats", "error");
+          openAuthModal();
+          return;
+        }
+
+        if (seat.state === "held" && seat.isMine) {
+          openConfirmModal(seat.id);
+          return;
+        }
+
+        showToast(`Holding seat ${seat.id}...`, "info");
+        const holdRes = await api(`/movies/${MOVIE_ID}/seats/${seat.id}/hold`, {
+          method: "POST",
+          headers: authHeaders(),
+        });
+
+        if (!holdRes.ok) {
+          showToast(holdRes.body.error || "Unable to hold seat", "error");
+          await loadSeats();
+          return;
+        }
+
+        await loadSeats();
+        openConfirmModal(seat.id);
+      }
+
+      /* ---------- confirm modal ---------- */
+      function openConfirmModal(seatId) {
+        holdSeatId = seatId;
+        $("confirmSeatLabel").textContent = seatId;
+        $("confirmSeatId").textContent = seatId;
+        confirmModal.classList.add("active");
+        startCountdown();
+      }
+      function closeConfirmModal() {
+        confirmModal.classList.remove("active");
+        holdSeatId = null;
+        clearInterval(countdownInterval);
+      }
+
+      function startCountdown() {
+        let remaining = HOLD_DURATION;
+        const circle = $("countdownCircle");
+        const circumference = 87.96;
+
+        function tick() {
+          const minutes = Math.floor(remaining / 60);
+          const seconds = remaining % 60;
+          $("countdownText").textContent = `${minutes}:${String(seconds).padStart(2, "0")}`;
+          const offset =
+            circumference - (remaining / HOLD_DURATION) * circumference;
+          circle.style.strokeDashoffset = offset;
+          if (remaining <= 0) {
+            clearInterval(countdownInterval);
+            closeConfirmModal();
+            showToast("Seat hold expired", "error");
+            loadSeats();
+          }
+          remaining--;
+        }
+        tick();
+        clearInterval(countdownInterval);
+        countdownInterval = setInterval(tick, 1000);
+      }
+
+      $("confirmBookBtn").addEventListener("click", async () => {
+        if (!holdSeatId) return;
+        const result = await api(
+          `/movies/${MOVIE_ID}/seats/${holdSeatId}/confirm`,
+          { method: "POST", headers: authHeaders() }
+        );
+        closeConfirmModal();
+        if (!result.ok) {
+          showToast(result.body.error || "Booking failed", "error");
+        } else {
+          showToast(`Seat ${holdSeatId} booked successfully!`, "success");
+        }
+        await loadSeats();
+        await loadMyBookings();
+      });
+
+      $("cancelHoldBtn").addEventListener("click", () => {
+        closeConfirmModal();
+        showToast("Hold cancelled", "info");
+        loadSeats();
+      });
+
+      confirmModal.addEventListener("click", (e) => {
+        if (e.target === confirmModal) {
+          closeConfirmModal();
+          loadSeats();
+        }
+      });
+
+      /* ---------- my bookings ---------- */
+      async function loadMyBookings() {
+        if (!token) {
+          bookingsSection.classList.add("hidden");
+          return;
+        }
+        const result = await api("/me/bookings", { headers: authHeaders() });
+        if (!result.ok || !result.body.bookings?.length) {
+          bookingsSection.classList.add("hidden");
+          return;
+        }
+        bookingsSection.classList.remove("hidden");
+        bookingsList.innerHTML = result.body.bookings
+          .map(
+            (b) => `
+            <div class="flex items-center justify-between bg-zinc-900/60 rounded-xl px-4 py-3 border border-zinc-800/60">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-lg bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 text-xs font-bold">${b.seatId}</div>
+                <div>
+                  <p class="text-sm text-white font-medium">Seat ${b.seatId}</p>
+                  <p class="text-[11px] text-zinc-500">${new Date(b.createdAt).toLocaleString()}</p>
+                </div>
+              </div>
+              <span class="px-2 py-1 rounded-md text-[10px] font-semibold uppercase tracking-wider ${b.status === "booked" ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : "bg-zinc-800 text-zinc-400"}">${b.status}</span>
+            </div>`
+          )
+          .join("");
+      }
+
+      /* ---------- boot ---------- */
+      async function boot() {
+        await loadCurrentUser();
+        renderNav();
+        await loadSeats();
+        await loadMyBookings();
+        if (!token) openAuthModal();
+      }
+
+      boot();
     </script>
   </body>
 </html>
