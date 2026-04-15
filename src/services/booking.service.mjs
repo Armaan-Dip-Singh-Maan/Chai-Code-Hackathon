@@ -45,8 +45,6 @@ export const listMovieSeats = async ({ movieId, userId }) => {
     `
       SELECT
         s.id,
-        s.name AS legacy_name,
-        s.isbooked AS legacy_isbooked,
         b.user_id AS booked_by_user_id,
         b.status AS booking_status,
         u.name AS booked_by_name,
@@ -69,9 +67,9 @@ export const listMovieSeats = async ({ movieId, userId }) => {
   );
 
   return result.rows.map((row) => {
-    const isBooked = row.booking_status === BOOKED_STATUS || row.legacy_isbooked === 1;
+    const isBooked = row.booking_status === BOOKED_STATUS;
     const isHeld = !isBooked && Boolean(row.held_by_user_id);
-    const bookedBy = row.booked_by_name || row.legacy_name || "Booked";
+    const bookedBy = row.booked_by_name || "Booked";
     return {
       id: row.id,
       state: isBooked ? "booked" : isHeld ? "held" : "available",
