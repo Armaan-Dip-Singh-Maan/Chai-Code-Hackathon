@@ -90,6 +90,26 @@
         transform: translateY(-3px);
         box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2);
       }
+      .seat.available.tier-premium {
+        border-color: rgba(234, 179, 8, 0.5);
+        color: #facc15;
+        background: rgba(234, 179, 8, 0.08);
+      }
+      .seat.available.tier-premium:hover {
+        background: rgba(234, 179, 8, 0.2);
+        border-color: #facc15;
+        box-shadow: 0 8px 25px rgba(234, 179, 8, 0.15);
+      }
+      .seat.available.tier-vip {
+        border-color: rgba(168, 85, 247, 0.5);
+        color: #c084fc;
+        background: rgba(168, 85, 247, 0.08);
+      }
+      .seat.available.tier-vip:hover {
+        background: rgba(168, 85, 247, 0.2);
+        border-color: #c084fc;
+        box-shadow: 0 8px 25px rgba(168, 85, 247, 0.15);
+      }
       .seat.booked {
         background: rgba(225, 29, 72, 0.08);
         border: 1.5px solid rgba(225, 29, 72, 0.2);
@@ -376,53 +396,105 @@
           >
         </div>
 
-        <!-- tabs -->
-        <div
-          class="flex gap-6 justify-center mb-6 border-b border-zinc-800 pb-2"
-        >
-          <button
-            class="tab-btn active pb-2 text-sm font-medium"
-            data-tab="login"
+        <div id="authMainBlock">
+          <!-- tabs -->
+          <div
+            id="authTabs"
+            class="flex gap-6 justify-center mb-6 border-b border-zinc-800 pb-2"
           >
-            Sign In
-          </button>
-          <button class="tab-btn pb-2 text-sm font-medium" data-tab="register">
-            Create Account
-          </button>
-        </div>
+            <button
+              class="tab-btn active pb-2 text-sm font-medium"
+              data-tab="login"
+              type="button"
+            >
+              Sign In
+            </button>
+            <button
+              class="tab-btn pb-2 text-sm font-medium"
+              data-tab="register"
+              type="button"
+            >
+              Create Account
+            </button>
+          </div>
 
-        <!-- register fields -->
-        <div id="registerFields" class="hidden mb-4">
-          <label class="text-xs text-zinc-500 mb-1 block">Full Name</label>
-          <input
-            id="nameInput"
-            class="input-field w-full px-4 py-3 rounded-xl bg-zinc-900/80 border border-zinc-800 text-white text-sm mb-3"
-            placeholder="Armaan Singh"
-          />
-        </div>
+          <!-- register fields -->
+          <div id="registerFields" class="hidden mb-4">
+            <label class="text-xs text-zinc-500 mb-1 block">Full Name</label>
+            <input
+              id="nameInput"
+              class="input-field w-full px-4 py-3 rounded-xl bg-zinc-900/80 border border-zinc-800 text-white text-sm mb-3"
+              placeholder="Armaan Singh"
+            />
+          </div>
 
-        <!-- shared fields -->
-        <div class="mb-3">
-          <label class="text-xs text-zinc-500 mb-1 block">Email</label>
-          <input
-            id="emailInput"
-            type="email"
-            class="input-field w-full px-4 py-3 rounded-xl bg-zinc-900/80 border border-zinc-800 text-white text-sm"
-            placeholder="you@example.com"
-          />
-        </div>
-        <div class="mb-5">
-          <label class="text-xs text-zinc-500 mb-1 block">Password</label>
-          <input
-            id="passwordInput"
-            type="password"
-            class="input-field w-full px-4 py-3 rounded-xl bg-zinc-900/80 border border-zinc-800 text-white text-sm"
-            placeholder="Min 6, upper, lower, number, special"
-          />
-          <p id="passwordHint" class="text-[11px] text-zinc-500 mt-2 hidden">
-            Use at least 6 characters with uppercase, lowercase, number, and
-            special character.
-          </p>
+          <!-- shared fields -->
+          <div class="mb-3">
+            <label class="text-xs text-zinc-500 mb-1 block">Email</label>
+            <input
+              id="emailInput"
+              type="email"
+              class="input-field w-full px-4 py-3 rounded-xl bg-zinc-900/80 border border-zinc-800 text-white text-sm"
+              placeholder="you@example.com"
+            />
+          </div>
+          <div id="passwordBlock" class="mb-5">
+            <label class="text-xs text-zinc-500 mb-1 block">Password</label>
+            <div class="relative">
+              <input
+                id="passwordInput"
+                type="password"
+                autocomplete="current-password"
+                class="input-field w-full pl-4 pr-12 py-3 rounded-xl bg-zinc-900/80 border border-zinc-800 text-white text-sm"
+                placeholder="Min 6, upper, lower, number, special"
+              />
+              <button
+                type="button"
+                id="togglePasswordBtn"
+                class="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800/80 transition"
+                aria-label="Show password"
+              >
+                <svg
+                  id="eyeShowIcon"
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                  />
+                </svg>
+                <svg
+                  id="eyeHideIcon"
+                  class="w-5 h-5 hidden"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a18.49 18.49 0 01-5.06 5.06M3 3l18 18"
+                  />
+                </svg>
+              </button>
+            </div>
+            <p id="passwordHint" class="text-[11px] text-zinc-500 mt-2 hidden">
+              Use at least 6 characters with uppercase, lowercase, number, and
+              special character.
+            </p>
+          </div>
         </div>
 
         <button
@@ -449,6 +521,7 @@
             Seat <span id="confirmSeatId" class="text-white font-medium"></span>
             is held for you.
           </p>
+          <p id="confirmTierLabel" class="text-xs font-semibold mt-2"></p>
           <div class="flex items-center justify-center gap-2 mt-3 text-xs text-zinc-500">
             <svg class="countdown-ring" viewBox="0 0 36 36">
               <circle class="bg" cx="18" cy="18" r="14" />
@@ -525,41 +598,63 @@
             class="w-48 h-72 rounded-2xl bg-gradient-to-br from-rose-900/50 to-zinc-900 border border-zinc-800 flex items-center justify-center shadow-2xl flex-shrink-0"
           >
             <div class="text-center p-4">
-              <div class="text-4xl mb-2">🎬</div>
-              <p class="text-sm font-semibold text-white leading-tight">
-                Dhurandhar<br />The Revenge
+              <div id="heroEmoji" class="text-4xl mb-2">🎬</div>
+              <p
+                id="heroPosterTitle"
+                class="text-sm font-semibold text-white leading-tight whitespace-pre-line"
+              >
+                Dhurandhar
+The Revenge
               </p>
-              <p class="text-[10px] text-zinc-500 mt-2">2026 - Action/Drama</p>
+              <p id="heroPosterMeta" class="text-[10px] text-zinc-500 mt-2">
+                2026 · Action/Drama
+              </p>
             </div>
           </div>
-          <div class="text-center md:text-left">
+          <div class="text-center md:text-left w-full">
             <div
               class="inline-block px-3 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-400 text-[10px] font-semibold uppercase tracking-widest mb-3"
             >
               Now Showing
             </div>
             <h1
+              id="heroTitle"
               class="text-3xl md:text-4xl font-extrabold text-white mb-2 tracking-tight"
             >
               Dhurandhar The Revenge
             </h1>
-            <p class="text-zinc-400 text-sm mb-4 max-w-md">
+            <p id="heroSynopsis" class="text-zinc-400 text-sm mb-4 max-w-md">
               Jassi ko ghar ki yaad kyu nhi aai? Experience the blockbuster on
               the big screen at ChaiCode Cinema.
             </p>
-            <div class="flex flex-wrap gap-3 justify-center md:justify-start">
+            <div
+              id="heroMeta"
+              class="flex flex-wrap gap-3 justify-center md:justify-start"
+            >
               <span
+                id="heroLang"
                 class="px-3 py-1 rounded-lg bg-zinc-800/60 border border-zinc-700/50 text-xs text-zinc-300"
                 >Hindi</span
               >
               <span
+                id="heroRuntime"
                 class="px-3 py-1 rounded-lg bg-zinc-800/60 border border-zinc-700/50 text-xs text-zinc-300"
                 >2h 30min</span
               >
               <span
+                id="heroCert"
                 class="px-3 py-1 rounded-lg bg-zinc-800/60 border border-zinc-700/50 text-xs text-zinc-300"
                 >UA</span
               >
+            </div>
+            <div class="mt-5">
+              <p class="text-[10px] text-zinc-500 uppercase tracking-wider mb-2">
+                Pick a film
+              </p>
+              <div
+                id="moviePicker"
+                class="flex flex-wrap gap-2 justify-center md:justify-start"
+              ></div>
             </div>
           </div>
         </div>
@@ -569,53 +664,48 @@
       <div class="flex-1 px-6 py-8">
         <div class="max-w-5xl mx-auto">
           <!-- section header -->
-          <div
-            class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4"
-          >
-            <div>
-              <h2 class="text-xl font-bold text-white mb-1">Select Seats</h2>
-              <p class="text-xs text-zinc-500">
-                Choose your seats and book instantly
-              </p>
+          <div id="seatSection" class="mb-8">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-3">
+              <div>
+                <h2 class="text-xl font-bold text-white mb-1">Select Seats</h2>
+                <p id="seatAvailLabel" class="text-xs text-zinc-500">
+                  Choose your seat and book instantly
+                </p>
+              </div>
+              <div id="soldOutBadge" class="hidden">
+                <span class="px-4 py-1.5 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-400 text-xs font-bold uppercase tracking-wider">
+                  Sold Out
+                </span>
+              </div>
             </div>
-            <!-- legend -->
-            <div class="flex gap-4 flex-wrap">
+            <!-- tier legend -->
+            <div class="flex flex-wrap gap-x-5 gap-y-2 mb-3">
               <div class="flex items-center gap-2">
-                <div
-                  class="w-5 h-5 rounded-md bg-emerald-500/12 border border-emerald-500/40"
-                  style="background: rgba(16, 185, 129, 0.12)"
-                ></div>
-                <span class="text-[11px] text-zinc-400">Available</span>
+                <div class="w-5 h-5 rounded-md" style="background: rgba(16,185,129,0.12); border: 1.5px solid rgba(16,185,129,0.4)"></div>
+                <span class="text-[11px] text-zinc-400">Basic · ₹300</span>
               </div>
               <div class="flex items-center gap-2">
-                <div
-                  class="w-5 h-5 rounded-md"
-                  style="
-                    background: rgba(99, 102, 241, 0.15);
-                    border: 1.5px solid rgba(99, 102, 241, 0.5);
-                  "
-                ></div>
-                <span class="text-[11px] text-zinc-400">Your Hold</span>
+                <div class="w-5 h-5 rounded-md" style="background: rgba(234,179,8,0.08); border: 1.5px solid rgba(234,179,8,0.5)"></div>
+                <span class="text-[11px] text-zinc-400">Ameer Bache · ₹600</span>
               </div>
               <div class="flex items-center gap-2">
-                <div
-                  class="w-5 h-5 rounded-md"
-                  style="
-                    background: rgba(245, 158, 11, 0.12);
-                    border: 1.5px solid rgba(245, 158, 11, 0.4);
-                  "
-                ></div>
-                <span class="text-[11px] text-zinc-400">Held</span>
+                <div class="w-5 h-5 rounded-md" style="background: rgba(168,85,247,0.08); border: 1.5px solid rgba(168,85,247,0.5)"></div>
+                <span class="text-[11px] text-zinc-400">Sip Krle Bhai · ₹1200</span>
+              </div>
+            </div>
+            <!-- state legend -->
+            <div class="flex flex-wrap gap-x-5 gap-y-2">
+              <div class="flex items-center gap-2">
+                <div class="w-4 h-4 rounded" style="background: rgba(99,102,241,0.15); border: 1.5px solid rgba(99,102,241,0.5)"></div>
+                <span class="text-[10px] text-zinc-500">Your Hold</span>
               </div>
               <div class="flex items-center gap-2">
-                <div
-                  class="w-5 h-5 rounded-md"
-                  style="
-                    background: rgba(225, 29, 72, 0.08);
-                    border: 1.5px solid rgba(225, 29, 72, 0.2);
-                  "
-                ></div>
-                <span class="text-[11px] text-zinc-400">Booked</span>
+                <div class="w-4 h-4 rounded" style="background: rgba(245,158,11,0.12); border: 1.5px solid rgba(245,158,11,0.4)"></div>
+                <span class="text-[10px] text-zinc-500">Held</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="w-4 h-4 rounded" style="background: rgba(225,29,72,0.08); border: 1.5px solid rgba(225,29,72,0.2)"></div>
+                <span class="text-[10px] text-zinc-500">Booked</span>
               </div>
             </div>
           </div>
@@ -648,6 +738,105 @@
             </h3>
             <div id="bookingsList" class="space-y-2"></div>
           </div>
+
+          <!-- what you can do -->
+          <div
+            id="featuresSection"
+            class="relative mt-10 mb-4 rounded-2xl overflow-hidden border border-zinc-800/50 bg-zinc-950/30 backdrop-blur-xl"
+          >
+            <div
+              class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-rose-500/40 to-transparent"
+              aria-hidden="true"
+            ></div>
+            <div class="p-6 sm:p-8">
+              <div class="mb-6 sm:mb-8">
+                <span
+                  class="inline-block text-[10px] font-semibold uppercase tracking-[0.2em] text-rose-400/90 mb-2"
+                  >BookMyTicket</span
+                >
+                <h3 class="text-xl sm:text-2xl font-bold text-white tracking-tight mb-2">
+                  What you can do
+                </h3>
+                <p class="text-sm text-zinc-500 max-w-xl leading-relaxed">
+                  Everything you need to grab a seat — built for the hackathon demo,
+                  styled like a real cinema app.
+                </p>
+              </div>
+              <div class="grid sm:grid-cols-2 gap-3">
+                <div
+                  class="group rounded-xl border border-zinc-800/70 bg-zinc-900/40 px-4 py-3.5 transition hover:border-rose-500/25 hover:bg-zinc-900/70"
+                >
+                  <p class="text-sm font-medium text-zinc-100 mb-0.5">
+                    Sign in safely
+                  </p>
+                  <p class="text-[12px] text-zinc-500 leading-snug">
+                    Strong password rules and a show / hide toggle on the field.
+                  </p>
+                </div>
+                <div
+                  class="group rounded-xl border border-zinc-800/70 bg-zinc-900/40 px-4 py-3.5 transition hover:border-rose-500/25 hover:bg-zinc-900/70"
+                >
+                  <p class="text-sm font-medium text-zinc-100 mb-0.5">
+                    Pick your film
+                  </p>
+                  <p class="text-[12px] text-zinc-500 leading-snug">
+                    Twelve titles — each show keeps its own seat map.
+                  </p>
+                </div>
+                <div
+                  class="group rounded-xl border border-zinc-800/70 bg-zinc-900/40 px-4 py-3.5 transition hover:border-rose-500/25 hover:bg-zinc-900/70"
+                >
+                  <p class="text-sm font-medium text-zinc-100 mb-0.5">
+                    Choose your tier
+                  </p>
+                  <p class="text-[12px] text-zinc-500 leading-snug">
+                    Cheapest rows sit nearest the screen; prices go up toward the
+                    back (Basic ₹300 → Ameer Bache ₹600 → Sip Krle Bhai ₹1200).
+                  </p>
+                </div>
+                <div
+                  class="group rounded-xl border border-zinc-800/70 bg-zinc-900/40 px-4 py-3.5 transition hover:border-rose-500/25 hover:bg-zinc-900/70"
+                >
+                  <p class="text-sm font-medium text-zinc-100 mb-0.5">
+                    Fair booking
+                  </p>
+                  <p class="text-[12px] text-zinc-500 leading-snug">
+                    One seat per person per movie so everyone gets a fair shot.
+                  </p>
+                </div>
+                <div
+                  class="group rounded-xl border border-zinc-800/70 bg-zinc-900/40 px-4 py-3.5 transition hover:border-rose-500/25 hover:bg-zinc-900/70"
+                >
+                  <p class="text-sm font-medium text-zinc-100 mb-0.5">
+                    Hold &amp; confirm
+                  </p>
+                  <p class="text-[12px] text-zinc-500 leading-snug">
+                    Lock a seat on a timer — confirm or let it go before it expires.
+                  </p>
+                </div>
+                <div
+                  class="group rounded-xl border border-zinc-800/70 bg-zinc-900/40 px-4 py-3.5 transition hover:border-rose-500/25 hover:bg-zinc-900/70"
+                >
+                  <p class="text-sm font-medium text-zinc-100 mb-0.5">
+                    Live availability
+                  </p>
+                  <p class="text-[12px] text-zinc-500 leading-snug">
+                    See how many seats are left; Sold Out when the hall is full.
+                  </p>
+                </div>
+                <div
+                  class="sm:col-span-2 group rounded-xl border border-zinc-800/70 bg-zinc-900/40 px-4 py-3.5 transition hover:border-rose-500/25 hover:bg-zinc-900/70"
+                >
+                  <p class="text-sm font-medium text-zinc-100 mb-0.5">
+                    Your tickets
+                  </p>
+                  <p class="text-[12px] text-zinc-500 leading-snug">
+                    My Bookings lists what you grabbed — cancel there if plans change.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -660,7 +849,166 @@
     </div>
 
     <script>
-      const MOVIE_ID = "dhurandhar-the-revenge";
+      const MOVIES = [
+        {
+          id: "dhurandhar-the-revenge",
+          title: "Dhurandhar The Revenge",
+          posterLines: "Dhurandhar\nThe Revenge",
+          year: "2026",
+          genre: "Action/Drama",
+          runtime: "2h 30min",
+          cert: "UA",
+          lang: "Hindi",
+          emoji: "🎬",
+          synopsis:
+            "Jassi ko ghar ki yaad kyu nhi aai? Experience the blockbuster on the big screen at ChaiCode Cinema.",
+        },
+        {
+          id: "midnight-in-mumbai",
+          title: "Midnight in Mumbai",
+          posterLines: "Midnight in\nMumbai",
+          year: "2025",
+          genre: "Thriller",
+          runtime: "2h 08min",
+          cert: "A",
+          lang: "Hindi",
+          emoji: "🌃",
+          synopsis:
+            "One night. Three strangers. A city that never sleeps—until it has to.",
+        },
+        {
+          id: "chai-code-chronicles",
+          title: "The Chai Code Chronicles",
+          posterLines: "Chai Code\nChronicles",
+          year: "2026",
+          genre: "Comedy",
+          runtime: "1h 55min",
+          cert: "U",
+          lang: "Hinglish",
+          emoji: "☕",
+          synopsis:
+            "Debug your life in this feel-good coder comedy—bugs optional, laughs guaranteed.",
+        },
+        {
+          id: "starfield-saga",
+          title: "Starfield Saga",
+          posterLines: "Starfield\nSaga",
+          year: "2026",
+          genre: "Sci‑Fi",
+          runtime: "2h 42min",
+          cert: "UA",
+          lang: "English",
+          emoji: "🚀",
+          synopsis:
+            "Across the spiral arm, a crew fights to bring humanity home.",
+        },
+        {
+          id: "monsoon-melody",
+          title: "Monsoon Melody",
+          posterLines: "Monsoon\nMelody",
+          year: "2024",
+          genre: "Romance",
+          runtime: "2h 12min",
+          cert: "U",
+          lang: "Malayalam",
+          emoji: "🌧️",
+          synopsis:
+            "Rain on the roof, music in the air—love finds a way between seasons.",
+        },
+        {
+          id: "the-last-debug",
+          title: "The Last Debug",
+          posterLines: "The Last\nDebug",
+          year: "2026",
+          genre: "Mystery",
+          runtime: "1h 48min",
+          cert: "UA",
+          lang: "English",
+          emoji: "🔍",
+          synopsis:
+            "When production goes dark, one engineer traces the final stack trace.",
+        },
+        {
+          id: "coral-reef-dreams",
+          title: "Coral Reef Dreams",
+          posterLines: "Coral Reef\nDreams",
+          year: "2025",
+          genre: "Documentary",
+          runtime: "1h 38min",
+          cert: "U",
+          lang: "English",
+          emoji: "🐠",
+          synopsis:
+            "Dive with marine biologists restoring reefs—hope beneath the waves.",
+        },
+        {
+          id: "neon-alley-runners",
+          title: "Neon Alley Runners",
+          posterLines: "Neon Alley\nRunners",
+          year: "2026",
+          genre: "Cyberpunk",
+          runtime: "2h 05min",
+          cert: "A",
+          lang: "English",
+          emoji: "🌆",
+          synopsis:
+            "Couriers race the clock through a rain-soaked megacity where data is currency.",
+        },
+        {
+          id: "paper-tigers",
+          title: "Paper Tigers",
+          posterLines: "Paper\nTigers",
+          year: "2024",
+          genre: "Family",
+          runtime: "1h 52min",
+          cert: "U",
+          lang: "Tamil",
+          emoji: "🐯",
+          synopsis:
+            "A grandfather and granddaughter rebuild their bond over kite season.",
+        },
+        {
+          id: "echo-valley-blues",
+          title: "Echo Valley Blues",
+          posterLines: "Echo Valley\nBlues",
+          year: "2025",
+          genre: "Musical",
+          runtime: "2h 18min",
+          cert: "UA",
+          lang: "English",
+          emoji: "🎸",
+          synopsis:
+            "A washed-up band reunites for one last festival in the hills.",
+        },
+        {
+          id: "winter-crown",
+          title: "Winter Crown",
+          posterLines: "Winter\nCrown",
+          year: "2026",
+          genre: "Fantasy",
+          runtime: "2h 35min",
+          cert: "UA",
+          lang: "English",
+          emoji: "❄️",
+          synopsis:
+            "An exiled heir returns when the eternal frost threatens the realm.",
+        },
+        {
+          id: "speed-of-silence",
+          title: "Speed of Silence",
+          posterLines: "Speed of\nSilence",
+          year: "2025",
+          genre: "Sports",
+          runtime: "2h 00min",
+          cert: "UA",
+          lang: "Hindi",
+          emoji: "🏎️",
+          synopsis:
+            "On the track, milliseconds decide fate—off it, a driver faces his past.",
+        },
+      ];
+
+      let selectedMovieId = MOVIES[0].id;
       const HOLD_DURATION = 120;
       let token = sessionStorage.getItem("token") || "";
       let currentUser = null;
@@ -675,6 +1023,68 @@
       const bookingsSection = $("bookingsSection");
       const bookingsList = $("bookingsList");
       const navRight = $("navRight");
+
+      function currentMovie() {
+        return MOVIES.find((m) => m.id === selectedMovieId) || MOVIES[0];
+      }
+
+      function movieDisplayName(movieId) {
+        const m = MOVIES.find((x) => x.id === movieId);
+        return m ? m.title : movieId;
+      }
+
+      function escapeHtmlAttr(s) {
+        return String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;");
+      }
+
+      function updateHero() {
+        const m = currentMovie();
+        $("heroEmoji").textContent = m.emoji;
+        $("heroPosterTitle").textContent = m.posterLines;
+        $("heroPosterMeta").textContent = `${m.year} · ${m.genre}`;
+        $("heroTitle").textContent = m.title;
+        $("heroSynopsis").textContent = m.synopsis;
+        $("heroLang").textContent = m.lang;
+        $("heroRuntime").textContent = m.runtime;
+        $("heroCert").textContent = m.cert;
+      }
+
+      function renderMoviePicker() {
+        const el = $("moviePicker");
+        if (!el) return;
+        el.innerHTML = "";
+        MOVIES.forEach((m) => {
+          const b = document.createElement("button");
+          b.type = "button";
+          b.className = `px-3 py-1.5 rounded-lg text-xs font-medium border transition ${
+            m.id === selectedMovieId
+              ? "bg-rose-500/20 border-rose-500/50 text-rose-200"
+              : "bg-zinc-900/50 border-zinc-800 text-zinc-400 hover:border-zinc-600"
+          }`;
+          b.textContent = m.title;
+          b.addEventListener("click", () => selectMovie(m.id));
+          el.appendChild(b);
+        });
+      }
+
+      async function selectMovie(movieId) {
+        if (movieId === selectedMovieId) return;
+        if (holdSeatId && token) {
+          const sid = holdSeatId;
+          const holdMovieId = selectedMovieId;
+          closeConfirmModal();
+          await releaseHoldAndRefresh(sid, {
+            silent: true,
+            movieId: holdMovieId,
+          });
+        }
+        selectedMovieId = movieId;
+        renderMoviePicker();
+        updateHero();
+        document.getElementById("seatSection")?.scrollIntoView({ behavior: "smooth" });
+        await loadSeats();
+        await loadMyBookings();
+      }
 
       /* ---------- helpers ---------- */
       function showToast(message, type = "info") {
@@ -719,9 +1129,30 @@
         );
       }
 
+      function renderAuthUi() {
+        document.querySelectorAll(".tab-btn").forEach((b) => {
+          b.classList.toggle("active", b.dataset.tab === authMode);
+        });
+        $("registerFields").classList.toggle("hidden", authMode !== "register");
+        $("authSubmitBtn").textContent =
+          authMode === "register" ? "Create Account" : "Sign In";
+        $("passwordHint").classList.toggle("hidden", authMode !== "register");
+      }
+
       function openAuthModal() {
+        renderAuthUi();
         authModal.classList.add("active");
       }
+
+      function openLoginModal() {
+        authMode = "login";
+        document.querySelectorAll(".tab-btn").forEach((b) => {
+          b.classList.toggle("active", b.dataset.tab === "login");
+        });
+        renderAuthUi();
+        authModal.classList.add("active");
+      }
+
       function closeAuthModal() {
         authModal.classList.remove("active");
         $("authError").textContent = "";
@@ -729,19 +1160,26 @@
 
       document.querySelectorAll(".tab-btn").forEach((btn) => {
         btn.addEventListener("click", () => {
-          document
-            .querySelectorAll(".tab-btn")
-            .forEach((b) => b.classList.remove("active"));
-          btn.classList.add("active");
           authMode = btn.dataset.tab;
-          $("registerFields").classList.toggle("hidden", authMode !== "register");
-          $("authSubmitBtn").textContent =
-            authMode === "register" ? "Create Account" : "Sign In";
-          $("passwordHint").classList.toggle("hidden", authMode !== "register");
+          renderAuthUi();
         });
       });
 
+      $("togglePasswordBtn").addEventListener("click", () => {
+        const input = $("passwordInput");
+        const show = input.type === "password";
+        input.type = show ? "text" : "password";
+        $("togglePasswordBtn").setAttribute(
+          "aria-label",
+          show ? "Hide password" : "Show password"
+        );
+        $("eyeShowIcon").classList.toggle("hidden", !show);
+        $("eyeHideIcon").classList.toggle("hidden", show);
+      });
+
       $("authSubmitBtn").addEventListener("click", async () => {
+        $("authError").textContent = "";
+
         const name = $("nameInput").value.trim();
         const email = $("emailInput").value.trim();
         const password = $("passwordInput").value;
@@ -794,13 +1232,11 @@
         if (e.target === authModal) closeAuthModal();
       });
 
-      $("navLoginBtn")?.addEventListener("click", openAuthModal);
-
       /* ---------- nav render ---------- */
       function renderNav() {
         if (!currentUser) {
           navRight.innerHTML = `<button id="navLoginBtn" class="btn-primary px-5 py-2 rounded-lg text-xs font-semibold">Sign In</button>`;
-          $("navLoginBtn").addEventListener("click", openAuthModal);
+          $("navLoginBtn").addEventListener("click", openLoginModal);
           return;
         }
         navRight.innerHTML = `
@@ -836,6 +1272,24 @@
         currentUser = result.body.user;
       }
 
+      /* ---------- seat tiers ---------- */
+      /* Row 0 = nearest SCREEN (top), row 2 = back — price rises toward the back */
+      const SEAT_TIERS = [
+        { name: "Basic", price: 300, css: "", color: "#34d399", rows: [0] },
+        { name: "Ameer Bache", price: 600, css: "tier-premium", color: "#facc15", rows: [1] },
+        { name: "Sip Krle Bhai Iski", price: 1200, css: "tier-vip", color: "#c084fc", rows: [2] },
+      ];
+      const TOTAL_SEATS = 20;
+      const PER_ROW = 8;
+
+      function getTier(seatId) {
+        const rowIdx = Math.floor((seatId - 1) / PER_ROW);
+        for (const t of SEAT_TIERS) {
+          if (t.rows.includes(rowIdx)) return t;
+        }
+        return SEAT_TIERS[SEAT_TIERS.length - 1];
+      }
+
       /* ---------- seats ---------- */
       const ROW_LABELS = "ABCDEFGHIJKLMNOP";
 
@@ -844,7 +1298,7 @@
         let seats = [];
 
         if (token) {
-          const result = await api(`/movies/${MOVIE_ID}/seats`, {
+          const result = await api(`/movies/${selectedMovieId}/seats`, {
             headers: authHeaders(),
           });
           if (result.ok) seats = result.body.seats;
@@ -862,8 +1316,27 @@
         }
 
         seats.sort((a, b) => a.id - b.id);
-        const perRow = 8;
-        for (let r = 0; r < Math.ceil(seats.length / perRow); r++) {
+        const available = seats.filter((s) => s.state === "available").length;
+        const isSoldOut = available === 0;
+
+        $("soldOutBadge").classList.toggle("hidden", !isSoldOut);
+        $("seatAvailLabel").textContent = isSoldOut
+          ? "All seats are taken for this show"
+          : `${available} of ${seats.length} seats available`;
+
+        let lastTierName = "";
+        for (let r = 0; r < Math.ceil(seats.length / PER_ROW); r++) {
+          const firstSeatInRow = r * PER_ROW + 1;
+          const tier = getTier(firstSeatInRow);
+
+          if (tier.name !== lastTierName) {
+            lastTierName = tier.name;
+            const tierLabel = document.createElement("div");
+            tierLabel.className = "w-full text-center mb-1 mt-4";
+            tierLabel.innerHTML = `<span class="text-[10px] font-semibold uppercase tracking-widest" style="color:${tier.color}">${tier.name} — ₹${tier.price}</span>`;
+            seatGrid.appendChild(tierLabel);
+          }
+
           const row = document.createElement("div");
           row.className = "flex items-center gap-2";
 
@@ -873,25 +1346,28 @@
           label.textContent = ROW_LABELS[r] || "";
           row.appendChild(label);
 
-          for (let c = 0; c < perRow; c++) {
-            const i = r * perRow + c;
+          for (let c = 0; c < PER_ROW; c++) {
+            const i = r * PER_ROW + c;
             if (i >= seats.length) break;
             const seat = seats[i];
+            const seatTier = getTier(seat.id);
             const el = document.createElement("div");
 
-            let cls = "seat available";
+            let cls = `seat available ${seatTier.css}`;
             if (seat.state === "booked") cls = "seat booked";
             else if (seat.state === "held" && seat.isMine) cls = "seat held-mine";
             else if (seat.state === "held") cls = "seat held";
             el.className = cls;
             el.textContent = seat.id;
 
+            const tierTip = `${seatTier.name} · ₹${seatTier.price}`;
             if (seat.state === "booked") {
               const bookedByLabel = seat.bookedBy || "Booked";
               el.innerHTML = `${seat.id}<div class="tip">${bookedByLabel}</div>`;
-            }
-            if (seat.state === "held" && seat.isMine) {
-              el.innerHTML = `${seat.id}<div class="tip">Your hold - click to confirm</div>`;
+            } else if (seat.state === "held" && seat.isMine) {
+              el.innerHTML = `${seat.id}<div class="tip">Your hold · ${tierTip}</div>`;
+            } else if (seat.state === "available") {
+              el.innerHTML = `${seat.id}<div class="tip">${tierTip}</div>`;
             }
 
             el.addEventListener("click", () => onSeatClick(seat));
@@ -925,7 +1401,7 @@
         }
 
         showToast(`Holding seat ${seat.id}...`, "info");
-        const holdRes = await api(`/movies/${MOVIE_ID}/seats/${seat.id}/hold`, {
+        const holdRes = await api(`/movies/${selectedMovieId}/seats/${seat.id}/hold`, {
           method: "POST",
           headers: authHeaders(),
         });
@@ -941,13 +1417,14 @@
       }
 
       async function releaseHoldAndRefresh(seatId, options = {}) {
-        const { silent = false } = options;
+        const { silent = false, movieId } = options;
         if (!seatId || !token) {
           await loadSeats();
           return;
         }
 
-        const result = await api(`/movies/${MOVIE_ID}/seats/${seatId}/hold`, {
+        const mid = movieId ?? selectedMovieId;
+        const result = await api(`/movies/${mid}/seats/${seatId}/hold`, {
           method: "DELETE",
           headers: authHeaders(),
         });
@@ -961,9 +1438,10 @@
         await loadSeats();
       }
 
-      async function cancelBookingAndRefresh(seatId) {
+      async function cancelBookingAndRefresh(seatId, movieId) {
         if (!seatId || !token) return;
-        const result = await api(`/movies/${MOVIE_ID}/seats/${seatId}/booking`, {
+        const mid = movieId || selectedMovieId;
+        const result = await api(`/movies/${mid}/seats/${seatId}/booking`, {
           method: "DELETE",
           headers: authHeaders(),
         });
@@ -983,6 +1461,10 @@
         holdSeatId = seatId;
         $("confirmSeatLabel").textContent = seatId;
         $("confirmSeatId").textContent = seatId;
+        const tier = getTier(seatId);
+        const tierEl = $("confirmTierLabel");
+        tierEl.textContent = `${tier.name} · ₹${tier.price}`;
+        tierEl.style.color = tier.color;
         confirmModal.classList.add("active");
         startCountdown();
       }
@@ -1020,7 +1502,7 @@
       $("confirmBookBtn").addEventListener("click", async () => {
         if (!holdSeatId) return;
         const result = await api(
-          `/movies/${MOVIE_ID}/seats/${holdSeatId}/confirm`,
+          `/movies/${selectedMovieId}/seats/${holdSeatId}/confirm`,
           { method: "POST", headers: authHeaders() }
         );
         closeConfirmModal();
@@ -1066,7 +1548,8 @@
               <div class="flex items-center gap-3">
                 <div class="w-9 h-9 rounded-lg bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 text-xs font-bold">${b.seatId}</div>
                 <div>
-                  <p class="text-sm text-white font-medium">Seat ${b.seatId}</p>
+                  <p class="text-sm text-white font-medium">Seat ${b.seatId} <span class="text-[10px] font-normal" style="color:${getTier(b.seatId).color}">${getTier(b.seatId).name} · ₹${getTier(b.seatId).price}</span></p>
+                  <p class="text-[11px] text-zinc-400">${movieDisplayName(b.movieId)}</p>
                   <p class="text-[11px] text-zinc-500">${new Date(b.createdAt).toLocaleString()}</p>
                 </div>
               </div>
@@ -1074,7 +1557,7 @@
                 <span class="px-2 py-1 rounded-md text-[10px] font-semibold uppercase tracking-wider ${b.status === "booked" ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : "bg-zinc-800 text-zinc-400"}">${b.status}</span>
                 ${
                   b.status === "booked"
-                    ? `<button data-cancel-booking-seat="${b.seatId}" class="px-2 py-1 rounded-md text-[10px] font-semibold border border-rose-500/30 text-rose-300 bg-rose-500/10 hover:bg-rose-500/20 transition">Cancel</button>`
+                    ? `<button type="button" data-cancel-seat="${b.seatId}" data-cancel-movie="${escapeHtmlAttr(b.movieId)}" class="px-2 py-1 rounded-md text-[10px] font-semibold border border-rose-500/30 text-rose-300 bg-rose-500/10 hover:bg-rose-500/20 transition">Cancel</button>`
                     : ""
                 }
               </div>
@@ -1083,15 +1566,16 @@
           .join("");
 
         bookingsList
-          .querySelectorAll("[data-cancel-booking-seat]")
+          .querySelectorAll("[data-cancel-seat]")
           .forEach((button) => {
             button.addEventListener("click", async () => {
               const seatId = Number.parseInt(
-                button.getAttribute("data-cancel-booking-seat"),
+                button.getAttribute("data-cancel-seat"),
                 10
               );
+              const movieId = button.getAttribute("data-cancel-movie");
               if (Number.isNaN(seatId)) return;
-              await cancelBookingAndRefresh(seatId);
+              await cancelBookingAndRefresh(seatId, movieId);
             });
           });
       }
@@ -1100,9 +1584,12 @@
       async function boot() {
         await loadCurrentUser();
         renderNav();
+        updateHero();
+        renderMoviePicker();
         await loadSeats();
         await loadMyBookings();
-        if (!token) openAuthModal();
+
+        if (!token) openLoginModal();
       }
 
       boot();

@@ -88,6 +88,18 @@ export const holdSeat = async ({ movieId, seatId, userId }) => {
     await conn.query("BEGIN");
     await conn.query("SELECT id FROM seats WHERE id = $1 FOR UPDATE", [seatId]);
 
+    const existingBooking = await conn.query(
+      "SELECT id FROM bookings WHERE movie_id = $1 AND user_id = $2 AND status = $3",
+      [movieId, userId, BOOKED_STATUS]
+    );
+    if (existingBooking.rowCount > 0) {
+      throw new AppError(
+        409,
+        "You already have a booking for this movie. One seat per person.",
+        "one_seat_limit"
+      );
+    }
+
     const booked = await conn.query(
       "SELECT id FROM bookings WHERE seat_id = $1 AND movie_id = $2 AND status = $3 FOR UPDATE",
       [seatId, movieId, BOOKED_STATUS]
@@ -140,6 +152,18 @@ export const confirmSeatBooking = async ({ movieId, seatId, userId }) => {
   try {
     await conn.query("BEGIN");
     await conn.query("SELECT id FROM seats WHERE id = $1 FOR UPDATE", [seatId]);
+
+    const existingBooking = await conn.query(
+      "SELECT id FROM bookings WHERE movie_id = $1 AND user_id = $2 AND status = $3",
+      [movieId, userId, BOOKED_STATUS]
+    );
+    if (existingBooking.rowCount > 0) {
+      throw new AppError(
+        409,
+        "You already have a booking for this movie. One seat per person.",
+        "one_seat_limit"
+      );
+    }
 
     const alreadyBooked = await conn.query(
       "SELECT id FROM bookings WHERE seat_id = $1 AND movie_id = $2 AND status = $3 FOR UPDATE",
@@ -270,10 +294,30 @@ export const releaseSeatHold = async ({ movieId, seatId, userId }) => {
   }
 };
 
+/** Clears bookings and holds, resets seat rows. Does not remove users. */
 export const resetAllBookings = async () => {
   await pool.query("DELETE FROM bookings");
   await pool.query("DELETE FROM seat_holds");
   await pool.query("UPDATE seats SET isbooked = 0, name = NULL");
+};
+
+/**
+ * Deletes all users (cascades bookings and seat_holds), clears seat occupancy.
+ * Use for a full demo reset after sharing a public link.
+ */
+export const resetAllAppData = async () => {
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    await client.query("DELETE FROM users");
+    await client.query("UPDATE seats SET isbooked = 0, name = NULL");
+    await client.query("COMMIT");
+  } catch (err) {
+    await client.query("ROLLBACK");
+    throw err;
+  } finally {
+    client.release();
+  }
 };
 
 export const cleanupExpiredHolds = async () => {

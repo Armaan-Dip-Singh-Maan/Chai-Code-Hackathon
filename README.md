@@ -267,7 +267,13 @@ Expected response:
 |--------|------|------|-------------|
 | GET | `/health` | No | DB connectivity + uptime |
 | GET | `/admin/stats` | No | DB counts (users, bookings, holds) |
-| POST | `/admin/reset` | No | Reset all bookings and seats |
+| POST | `/admin/reset` | Optional secret | Deletes all users and clears bookings/holds/seats. When `ADMIN_RESET_SECRET` is set, send header `x-admin-secret: <value>`. |
+
+### Environment (admin)
+
+| Variable | Purpose |
+|----------|---------|
+| `ADMIN_RESET_SECRET` | If set, required as `x-admin-secret` on `POST /admin/reset` |
 
 ## Password Policy
 
@@ -327,6 +333,10 @@ curl http://localhost:8080/health
 
 # Admin stats
 curl http://localhost:8080/admin/stats
+
+# Full demo reset (all users + bookings) — with ADMIN_RESET_SECRET:
+curl -X POST http://localhost:8080/admin/reset \
+  -H "x-admin-secret: YOUR_SECRET"
 ```
 
 ## Frontend

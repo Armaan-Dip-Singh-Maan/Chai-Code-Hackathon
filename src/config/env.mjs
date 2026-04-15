@@ -21,6 +21,8 @@ export const config = {
   jwtExpiresIn: toTrimmed(process.env.JWT_EXPIRES_IN, "2h"),
   holdDurationSeconds: toInt(process.env.HOLD_DURATION_SECONDS, 120),
   holdCleanupIntervalMs: toInt(process.env.HOLD_CLEANUP_INTERVAL_MS, 30000),
+  /** When set, POST /admin/reset requires header x-admin-secret matching this value. */
+  adminResetSecret: toTrimmed(process.env.ADMIN_RESET_SECRET, ""),
   db: {
     connectionString: toTrimmed(process.env.DATABASE_URL, ""),
     host: toTrimmed(process.env.DB_HOST, "localhost"),

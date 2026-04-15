@@ -1,15 +1,26 @@
 import { Router } from "express";
 import { asyncHandler } from "../middleware/error.middleware.mjs";
-import { resetAllBookings } from "../services/booking.service.mjs";
+import { resetAllAppData } from "../services/booking.service.mjs";
 import { pool } from "../config/db.mjs";
+import { config } from "../config/env.mjs";
+import { AppError } from "../services/errors.mjs";
 
 export const adminRouter = Router();
 
 adminRouter.post(
   "/reset",
-  asyncHandler(async (_req, res) => {
-    await resetAllBookings();
-    return res.status(200).json({ message: "All bookings, holds, and seats have been reset" });
+  asyncHandler(async (req, res) => {
+    const secret = config.adminResetSecret;
+    if (secret) {
+      const header = req.headers["x-admin-secret"];
+      if (typeof header !== "string" || header !== secret) {
+        throw new AppError(401, "Unauthorized", "admin_unauthorized");
+      }
+    }
+    await resetAllAppData();
+    return res.status(200).json({
+      message: "All users, bookings, holds, and seats have been reset",
+    });
   })
 );
 
